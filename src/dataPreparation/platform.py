@@ -210,3 +210,65 @@ def saveFeatureToDisk(dataName, dataFrequency, df, featureName, saveAsFileExtn='
         raise
     finally:
         return featureFilePath
+
+def getFeatureData(dataName, dataFrequency, featureFileName):
+    import pandas as pd
+    import os
+    import sys
+    import traceback
+
+    from config.config import getAppConfigData
+    from config.config import setAppConfigData
+    
+    from utils.common import getProjectRootFolderPath
+    from utils.fileFolderManipulations import createFolder
+    from utils.errorHandler import handleError
+
+    featureDf = None
+    try:
+
+        # To Do - When Time Permits - Adds stability and Ease of Maintenance
+        #
+        # Parameter Validation List
+        # -------------------------------------
+        # 1. dataName must be String 
+        # 2. dataName should be one of available data in data folder
+        #
+        # 3. dataFrequency must be string
+        # 4. dataFrequency must be one of available dataFequency in data folder
+        #
+        # 5. df must be of type pandas dataframe
+        # 6. df must have valid data
+        # 
+        # 7. featureName must be string
+        # 8. if a featureName file already exists should ask for confirmation on overwrite
+        #
+        # 9. saveAsFileExtn - validation already in place - No new code required
+        #
+        # 10. withIndex - should be a boolean value
+
+        projectRootFolderPath = getProjectRootFolderPath()
+
+        featureFolderPath = projectRootFolderPath + '/data/' + dataName + '/processed/'+ dataFrequency+ '/features' 
+        
+        featureFilePath = featureFolderPath+ '/' + featureFileName 
+
+        
+
+        if isinstance(featureFileName,str) :
+            if featureFileName.index('.csv') == len(featureFileName)-4:
+                featureDf = pd.read_csv(featureFilePath)
+            elif featureFileName.index('.json') == len(featureFileName)-4:
+                featureDf = pd.read_json(featureFilePath)
+            else:
+                raise ValueError('Invalid saveAsFileExtn - must be csv or json')
+        else:
+            raise ValueError('Invalid saveAsFileExtn - must be a valid string value')
+    
+    except:
+        handleError(sys.exc_info(), traceback, traceback_template)
+        raise
+    finally:
+        return featureDf
+
+                
