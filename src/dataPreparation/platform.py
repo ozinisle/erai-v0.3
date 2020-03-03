@@ -6,7 +6,7 @@ traceback_template = '''Traceback (most recent call last):
 %(type)s: %(message)s\n'''  # Skipping the "actual line" item
 
 
-def createPlatform(dataName, dataFrequency):
+def createPlatform(dataName, dataFrequency, getNativeDataOnly=False):
     import os
     import sys
     import traceback
@@ -37,6 +37,9 @@ def createPlatform(dataName, dataFrequency):
         autoConfigData = getAppConfigData()
 
         preProcessedDataFilePath = autoConfigData[dataName][dataFrequency]['preProcessedDataFilePath']
+
+        if getNativeDataOnly:
+            preProcessedDataFilePath = preProcessedDataFilePath.replace('.csv','') + '_native.csv'
 
         # read the raw processed data from csv file
         inputRawProcessedDataDF = pd.read_csv(

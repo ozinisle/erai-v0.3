@@ -117,3 +117,94 @@ def deleteFile(filePath):
 
     finally:
         return success
+
+def archiveFileInRawDataFolder(dataName,dataFrequency,filePathList):
+    import os,sys
+    from utils.common import getProjectRootFolderPath
+    from utils.errorHandler import handleError
+    from shutil import copyfile
+    import time
+
+    success = False
+    
+    # Variable to hold the original source folder path which is calculated from the input relative path of the source folder (relativeDataFolderPath)
+    # using various python commands like os.path.abspath and os.path.join
+
+    projectRootFolderPath = None
+
+    
+    try:
+        print ( ' debug >>> archiveFileInRawDataFolder >>> into method')
+        # caluclate the deployment directory path of the current juypter node in the operating system
+        projectRootFolderPath = getProjectRootFolderPath()
+
+        relativeDataFolderPath = 'data/'+dataName+'/raw/' + dataFrequency
+
+        archiveRootFolderPath = projectRootFolderPath +'/'+ relativeDataFolderPath + '/archive'
+
+        # create the archive root folder if it does not exist
+        createFolder(archiveRootFolderPath)
+
+        # create sub archive folder with current time stamp _ avoid overwritting of archive file and hence averting loss of archived data
+        archiveFolderPath = archiveRootFolderPath + '/archive_' + str(time.time())
+
+        # create the archive root folder if 
+        createFolder(archiveFolderPath)
+        print ( ' debug >>> archiveFileInRawDataFolder >>> about to loop through filelist')
+        for filePath in filePathList:
+            filePathArr = filePath.split('/')
+            fileName = filePathArr[len(filePathArr)-1] 
+
+            print ( ' debug >>> archiveFileInRawDataFolder >>> attempting to copy file >>> '+ filePath + '\nto location >>> '+archiveFolderPath + '/' + fileName)
+            copyfile(filePath, archiveFolderPath + '/' + fileName)
+            deleteFile(filePath)
+
+        success = True
+        print ( ' debug >>> archiveFileInRawDataFolder >>> completed method')
+    except:
+        print ( ' debug >>> archiveFileInRawDataFolder >>> error in method')
+        handleError(sys.exc_info(), traceback, traceback_template)
+        raise
+
+    finally:
+        print ( ' debug >>> archiveFileInRawDataFolder >>> returning value >>> ' + str(success))
+        return success
+
+def isFileExists(filePath):
+    import os,sys
+    from utils.common import getProjectRootFolderPath
+    from utils.errorHandler import handleError
+    from os.path import exists
+
+    success = False
+    
+    try:
+        print ('Debug >>> start >>> isFileExists method')
+        
+        # caluclate the deployment directory path of the current juypter node in the operating system
+        projectRootFolderPath = getProjectRootFolderPath()
+        print ('Debug >>> isFileExists >>> projectRootFolderPath = '+ projectRootFolderPath)
+        rootFolderPathIndex = -1
+        try:
+            rootFolderPathIndex = filePath.index(projectRootFolderPath)
+        except ValueError:
+            print ('Debug >>> isFileExists >>> valueError')
+            pass
+        
+        print('DEBUG >>> isFileExists >>> rootFolderPathIndex = '+ str(rootFolderPathIndex))
+        if rootFolderPathIndex != 0:
+            filePath = projectRootFolderPath+'/'+filePath
+
+        print ('Debug >>> check if file path exists >>> ' + filePath)
+        success = exists(filePath)
+        
+    except:
+        handleError(sys.exc_info(), traceback, traceback_template)
+        raise
+        
+    finally:
+        print ('Debug >>> end >>> isFileExists method')
+        
+        return success
+
+
