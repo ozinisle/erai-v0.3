@@ -1,11 +1,11 @@
-from utils import *
 from dataPreparation import *
+from utils import *
 
 traceback_template = '''Traceback (most recent call last):
   File "%(filename)s", line %(lineno)s, in %(name)s
 %(type)s: %(message)s\n'''  # Skipping the "actual line" item
 
-def preProcessCommodityData(dataName,dataFrequency,stockExpiresOnDate):
+def preProcessCommodityData(dataName,dataFrequency):
     import os
     import sys
     import traceback
@@ -79,6 +79,7 @@ def preProcessCommodityData(dataName,dataFrequency,stockExpiresOnDate):
         # creating OS queryable object for python to work with to find json files in the dataFolderPath calcuated in the previous step
         json_pattern = os.path.join(dataFolderPath, '*.json')
 
+        print('checking for data files in >>> ' + dataFolderPath)
         # store all the json file paths in the dataFolderPath for further processing
         file_list = glob.glob(json_pattern)
         
